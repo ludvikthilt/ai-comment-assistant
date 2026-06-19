@@ -1,0 +1,10 @@
+# Désactive le contrôle "minimum release age" de pnpm v11+
+# (bloquait l'install de paquets publiés depuis moins de 24h, ex: @rollup/rollup-*)
+# Voir : https://pnpm.io/supply-chain-security
+minimumReleaseAge: 0
+
+# Autorise le script postinstall d'esbuild (télécharge le binaire natif).
+# Sans ça, "pnpm install --frozen-lockfile" échoue avec ERR_PNPM_IGNORED_BUILDS
+# Voir : https://pnpm.io/settings#allowbuilds
+allowBuilds:
+  esbuild: true

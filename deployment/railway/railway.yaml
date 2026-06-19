@@ -1,0 +1,15 @@
+services:
+  ai-service:
+    build:
+      context: ../../ai-service
+      dockerfile: Dockerfile
+    envs:
+      - MODEL_PATH
+      - PORT
+    volumes:
+      - /models:/app/models
+
+  frontend:
+    build:
+      context: ../../frontend
+      dockerfile: ../deployment/docker/Dockerfile.frontend

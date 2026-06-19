@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ../deployment/docker/Dockerfile.frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - ai-service
+    environment:
+      - VITE_SUPABASE_URL=${VITE_SUPABASE_URL}
+      - VITE_SUPABASE_ANON_KEY=${VITE_SUPABASE_ANON_KEY}
+      - VITE_AI_API_URL=${VITE_AI_API_URL}
+
+  ai-service:
+    build:
+      context: ./ai-service
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./ai-service/models:/app/models:ro
+    environment:
+      - MODEL_PATH=/app/models/
+      - PORT=8000
+    restart: unless-stopped
+
+  # Supabase est géré séparément via CLI ou cloud

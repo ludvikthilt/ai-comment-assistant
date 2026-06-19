@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: facebook-comment-ai
+    runtime: docker
+    repo: https://github.com/your-org/facebook-comment-ai
+    envVars:
+      - key: MODEL_PATH
+        value: /app/models/
+      - key: PORT
+        value: 8000
+    disk:
+      name: models
+      mountPath: /app/models
+      sizeGB: 1
+
+  - type: web
+    name: facebook-comment-ai-frontend
+    runtime: static
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: ./frontend/dist
