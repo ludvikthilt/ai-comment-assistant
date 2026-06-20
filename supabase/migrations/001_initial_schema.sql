@@ -1,5 +1,4 @@
 -- Extensions
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 -- ============================================================
@@ -19,7 +18,7 @@ CREATE TABLE public.users (
 -- TABLE: facebook_pages
 -- ============================================================
 CREATE TABLE public.facebook_pages (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
     page_id TEXT NOT NULL,
     page_name TEXT NOT NULL,
@@ -34,7 +33,7 @@ CREATE TABLE public.facebook_pages (
 -- TABLE: posts
 -- ============================================================
 CREATE TABLE public.posts (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     page_id UUID NOT NULL REFERENCES public.facebook_pages(id) ON DELETE CASCADE,
     facebook_post_id TEXT NOT NULL UNIQUE,
     content TEXT,
@@ -47,7 +46,7 @@ CREATE TABLE public.posts (
 -- TABLE: comments
 -- ============================================================
 CREATE TABLE public.comments (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     post_id UUID NOT NULL REFERENCES public.posts(id) ON DELETE CASCADE,
     facebook_comment_id TEXT NOT NULL UNIQUE,
     author_name TEXT NOT NULL,
@@ -68,7 +67,7 @@ CREATE TABLE public.comments (
 -- TABLE: response_templates
 -- ============================================================
 CREATE TABLE public.response_templates (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     category TEXT NOT NULL,
     keywords TEXT[] NOT NULL DEFAULT '{}',
     template_text TEXT NOT NULL,
@@ -84,7 +83,7 @@ CREATE TABLE public.response_templates (
 -- TABLE: generated_responses
 -- ============================================================
 CREATE TABLE public.generated_responses (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     comment_id UUID NOT NULL REFERENCES public.comments(id) ON DELETE CASCADE,
     template_id UUID REFERENCES public.response_templates(id),
     proposed_response TEXT NOT NULL,
@@ -98,7 +97,7 @@ CREATE TABLE public.generated_responses (
 -- TABLE: whatsapp_notifications
 -- ============================================================
 CREATE TABLE public.whatsapp_notifications (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     generated_response_id UUID NOT NULL REFERENCES public.generated_responses(id) ON DELETE CASCADE,
     phone_number TEXT NOT NULL,
     message_id TEXT,
@@ -112,7 +111,7 @@ CREATE TABLE public.whatsapp_notifications (
 -- TABLE: admin_replies
 -- ============================================================
 CREATE TABLE public.admin_replies (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     notification_id UUID NOT NULL REFERENCES public.whatsapp_notifications(id) ON DELETE CASCADE,
     original_response TEXT NOT NULL,
     modified_response TEXT NOT NULL,
@@ -123,7 +122,7 @@ CREATE TABLE public.admin_replies (
 -- TABLE: facebook_replies
 -- ============================================================
 CREATE TABLE public.facebook_replies (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     comment_id UUID NOT NULL REFERENCES public.comments(id) ON DELETE CASCADE,
     admin_reply_id UUID REFERENCES public.admin_replies(id),
     facebook_reply_id TEXT NOT NULL,
@@ -135,7 +134,7 @@ CREATE TABLE public.facebook_replies (
 -- TABLE: webhook_events
 -- ============================================================
 CREATE TABLE public.webhook_events (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     source TEXT NOT NULL CHECK (source IN ('facebook', 'whatsapp')),
     event_type TEXT NOT NULL,
     payload JSONB NOT NULL DEFAULT '{}',
@@ -147,7 +146,7 @@ CREATE TABLE public.webhook_events (
 -- TABLE: activity_logs
 -- ============================================================
 CREATE TABLE public.activity_logs (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID REFERENCES public.users(id),
     action TEXT NOT NULL,
     entity_type TEXT NOT NULL,
